@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="assets/logo.jpg" alt="YAWSIR (Yet Another Web Server In Rust) .. according to ChatGPT"/>
+  <img src="assets/logo.png" alt="YAWSIR (Yet Another Web Server In Rust) .. according to ChatGPT"/>
 </p>
 
-<h1 align="center">🤖🦀 YAWSIR: Yet Another Web Server In Rust 🦀🤖</h1>
+<h1 align="center">🤖🦀YAWSIR:YetAnotherWebServerInRust🦀🤖</h1>
 
 ### Menu
 
