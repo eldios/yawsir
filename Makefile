@@ -7,8 +7,13 @@ SLEEP_TIME?="5" # time in seconds
 endif
 
 REPO_DIR?="$(shell pwd)"
+
 KUBECTL?="$$(which kubectl)"
 KUBECFG?="${REPO_DIR}/kube.config"
+
+DOCKER?="$$(which docker)"
+DOCKER_IMAGE_NAME?="eldios/yawsir"
+DOCKER_IMAGE_TAG?="0.0.1"
 
 # default aliases
 up:        check-reqs kind-up helm-up
@@ -25,16 +30,20 @@ include kind/Makefile
 # HELM implementation
 include helm/Makefile
 
-# Docker implementation
-include docker/Makefile
+# build targets
+build: docker-build
 
-# build
-build: cargo-build docker-build
+docker: docker-build
+docker-build:
+	 ${DOCKER} build                              \
+	  -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} \
+		.
+docker-build-no-cache:
+	 ${DOCKER} build --no-cache                   \
+	  -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} \
+		.
 
-# build Cargo targets
-cargo-build:
-	@cargo build --locked --release
-
+# Pre-req checks
 check-reqs:
 	@export KIND="$$(which kind)"                     && \
 	export HELM="$$(which helm)"                      && \
@@ -93,31 +102,18 @@ help:
 	@echo ""
 	@echo "# Build targets"
 	@echo ""
-	@echo "cargo-build      - target -> build the Rust application with `Cargo build`"
 	@echo "docker-build     - target -> build the Docker image"
-	@echo "build            - alias  -> cargo-build docker-build"
+	@echo "build            - alias  -> docker-build"
 	@echo ""
 	@echo "# Publish targets"
 	@echo "docker-push      - target -> publish the Docker image"
 	@echo "push             - alias  -> docker-push"
 	@echo ""
-	@echo "full-up          - alias  -> kind-up sleep helm-up"
-	@echo "up               - alias  -> helm-up"
-	@echo ""
-	@echo "kind-up          - target -> sets up a new Kind Kubernetes in Docker"
-	@echo "kind             - alias  -> kind-up"
-	@echo ""
-	@echo "helm-yawsir-up   - target -> installs the Helm Chart stored in helm/yawsir to setup"
-	@echo "helm             - alias  -> helm-up"
-	@echo "helm-up          - alias  -> helm-yawsir-up"
-	@echo ""
 	@echo "# Uninstall/Cleaning targets"
 	@echo ""
 	@echo "clean            - alias  -> full-down"
 	@echo "down             - alias  -> kind-down"
-	@echo "full-down        - alias  -> kind-down remove-bins"
-	@echo ""
-	@echo "remove-bins      - target -> completely removes the 'bin' directory locally"
+	@echo "full-down        - alias  -> kind-down"
 	@echo ""
 	@echo "kind-down        - target -> tears down the Kind Kubernetes running in Docker"
 	@echo ""
@@ -137,5 +133,7 @@ help:
 	@echo ""
 
 .PHONY: up clean down help
-.PHONY: build cargo-build
+.PHONY: build cargo-build docker-build
+.PHONY: cargo cargo-test cargo-build cargo-run
+.PHONY: docker docker-build
 .PHONY: sleep config

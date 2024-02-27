@@ -1,0 +1,74 @@
+name: Test, FMT and linting pipeline
+
+on:
+  push:
+    branches:
+      - dev
+  pull_request:
+    branches:
+      - main
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+
+  check:
+    name: "Cargo check"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Check out the repo"
+        uses: actions/checkout@v4
+
+      - uses: "dtolnay/rust-toolchain@master"
+        with:
+          toolchain: "stable"
+
+      - name: "Run Cargo check"
+        run: "cargo check"
+
+  test:
+    name: "Cargo test"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Check out the repo"
+        uses: actions/checkout@v4
+
+      - uses: "dtolnay/rust-toolchain@master"
+        with:
+          toolchain: "stable"
+
+      - name: "Run Cargo test"
+        run: "cargo test"
+
+  fmt:
+    name: "Cargo format"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Check out the repo"
+        uses: actions/checkout@v4
+
+      - uses: "dtolnay/rust-toolchain@master"
+        with:
+          toolchain: "stable"
+
+      - run: "rustup component add rustfmt"
+
+      - name: "Run Cargo FMT --all"
+        run: "cargo fmt --all -- --check"
+
+  clippy:
+    name: "Cargo clippy"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Check out the repo"
+        uses: actions/checkout@v4
+
+      - uses: "dtolnay/rust-toolchain@master"
+        with:
+          toolchain: "stable"
+
+      - run: "rustup component add clippy"
+
+      - name: "Run Cargo clippy"
+        run: "cargo clippy -- -D warnings"
