@@ -40,7 +40,7 @@ pub struct HelloData<'r> {
 #[post("/", data = "<hello_data>")]
 pub fn hello(hello_data: Json<HelloData<'_>>) -> String {
     let message = std::env::var("MESSAGE").unwrap_or(String::from("Hello"));
-    String::from(format!("{message}, {}!", hello_data.name))
+    format!("{message}, {}!", hello_data.name)
 }
 
 // GET /ping
