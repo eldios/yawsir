@@ -17,15 +17,14 @@ jobs:
       - name: "Check out the repo"
         uses: actions/checkout@v4
 
-      - uses: "actions-rs/toolchain@v1"
+      - uses: "dtolnay/rust-toolchain@master"
         with:
           profile: "minimal"
           toolchain: "stable"
           override: true
 
-      - uses: "actions-rs/cargo@v1"
-        with:
-          command: "check"
+      - name: "Run Cargo check"
+        run: "cargo check"
 
   test:
     name: "Cargo test"
@@ -34,15 +33,14 @@ jobs:
       - name: "Check out the repo"
         uses: actions/checkout@v4
 
-      - uses: "actions-rs/toolchain@v1"
+      - uses: "dtolnay/rust-toolchain@master"
         with:
           profile: "minimal"
           toolchain: "stable"
           override: true
 
-      - uses: "actions-rs/cargo@v1"
-        with:
-          command: "test"
+      - name: "Run Cargo test"
+        run: "cargo test"
 
   fmt:
     name: "Cargo format"
@@ -51,7 +49,7 @@ jobs:
       - name: "Check out the repo"
         uses: actions/checkout@v4
 
-      - uses: "actions-rs/toolchain@v1"
+      - uses: "dtolnay/rust-toolchain@master"
         with:
           profile: "minimal"
           toolchain: "stable"
@@ -59,10 +57,8 @@ jobs:
 
       - run: "rustup component add rustfmt"
 
-      - uses: "actions-rs/cargo@v1"
-        with:
-          command: "fmt"
-          args: "--all -- --check"
+      - name: "Run Cargo FMT --all"
+        run: "cargo fmt --all -- --check"
 
   clippy:
     name: "Cargo clippy"
@@ -71,7 +67,7 @@ jobs:
       - name: "Check out the repo"
         uses: actions/checkout@v4
 
-      - uses: "actions-rs/toolchain@v1"
+      - uses: "dtolnay/rust-toolchain@master"
         with:
           profile: "minimal"
           toolchain: "stable"
@@ -79,10 +75,8 @@ jobs:
 
       - run: "rustup component add clippy"
 
-      - uses: "actions-rs/cargo@v1"
-        with:
-          command: "clippy"
-          args: "-- -D warnings"
+      - name: "Run Cargo clippy"
+        run: "cargo clippy -- -D warnings"
 
   get-tag:
     name: "Get Tag From Package Version"
