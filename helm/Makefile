@@ -3,31 +3,39 @@ helm:   helm-up
 .PHONY: helm
 
 # Helm implementation
-HELM?="$$(which helm)"
-HELM_DIR?="${REPO_DIR}/helm"
 
-HELM_YAWSIR_CHART_DIR?="${HELM_DIR}/yawsir"
+# variables
+HELM?="$$(which helm)"
+
 HELM_YAWSIR_NS?="yawsir"
 HELM_YAWSIR_NAME?="yawsir"
 
-helm-up: helm-yawsir-up
+# Pre-req checks
+check-reqs:
+	@export HELM="$$(which helm)"                       && \
+	if [ -z "$$HELM" ] ; then                              \
+	echo "[x] helm binary is missing or not in PATH"      ;\
+	else                                                   \
+	echo "[v] helm binary found at $${HELM}"              ;\
+	fi                                                    ;\
+	if [[ -z "$$HELM" ]] ; then        \
+		echo "Please install the missing software and retry";\
+		exit 1                                              ;\
+	fi
 
-helm-yawsir-up:
-	@export KUBECONFIG="${KUBECFG}"       &&\
-	export HELM_VAR_KUBECFG="${KUBECFG}"  &&\
-	cd ${HELM_YAWSIR_CHART_DIR}           &&\
-	${HELM} install -n ${HELM_YAWSIR_NS}    \
-		-f values.yaml --create-namespace     \
+helm-up: _helm-yawsir-up
+_helm-yawsir-up:
+	@cd yawsir                            && \
+	${HELM} install -n ${HELM_YAWSIR_NS}     \
+		-f kind_values.yaml --create-namespace \
 		${HELM_YAWSIR_NAME} .
 
-helm-down: helm-yawsir-down
-
-helm-yawsir-down:
-	@export KUBECONFIG="${KUBECFG}"       &&\
-	export HELM_VAR_KUBECFG="${KUBECFG}"  &&\
-	cd ${HELM_YAWSIR_CHART_DIR}           &&\
-	${HELM} uninstall -n ${HELM_YAWSIR_NS}  \
+helm-down: _helm-yawsir-down
+_helm-yawsir-down:
+	@cd yawsir                            && \
+	${HELM} uninstall -n ${HELM_YAWSIR_NS}   \
 		${HELM_YAWSIR_NAME}
 
+.PHONY: check-reqs
 .PHONY: helm helm-up helm-down
-.PHONY: helm-yawsir-up helm-yawsir-down
+.PHONY: _helm-yawsir-up _helm-yawsir-down
