@@ -1,0 +1,39 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: yawsir
+  namespace: argocd
+spec:
+  generators:
+  - list:
+      elements:
+      - cluster: switchboard
+        url: https://kubernetes.default.svc
+  template:
+    metadata:
+      name: 'yawsir-{{cluster}}'
+    spec:
+      project: devops
+      source:
+        repoURL: https://github.com/eldios/yawsir.git
+        targetRevision: HEAD
+        path: helm/yawsir
+        helm:
+          values: |
+            app:
+              message: "Hello"
+      destination:
+        server: '{{url}}'
+        namespace: yawsir
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+        - CreateNamespace=true
+        retry:
+          limit: 2
+          backoff:
+            duration: "5s"
+            factor: 2
+            maxDuration: "3m0s"
