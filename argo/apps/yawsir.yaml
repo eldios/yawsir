@@ -13,7 +13,7 @@ spec:
     metadata:
       name: 'yawsir-{{cluster}}'
     spec:
-      project: devops
+      project: argocd
       source:
         repoURL: https://github.com/eldios/yawsir.git
         targetRevision: HEAD
