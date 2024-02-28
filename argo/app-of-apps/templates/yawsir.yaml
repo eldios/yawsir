@@ -10,6 +10,10 @@ spec:
     repoURL: https://github.com/eldios/yawsir.git
     path: helm/yawsir
     targetRevision: HEAD
+    helm:
+      values: |
+        app:
+          message: "Hello"
   destination:
     server: https://kubernetes.default.svc
     namespace: yawsir

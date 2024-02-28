@@ -3,12 +3,15 @@ app:
   image:
     repository: "eldios/yawsir"
     pullPolicy: IfNotPresent
-    tag: "v0.0.2"
+    tag: "v0.0.3"
 
   http:
     port: 8000
 
   URL: "yawsir.lele.rip"
+
+  env:
+    message: "Hello"
 
   resources:
     limits:
