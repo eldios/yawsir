@@ -87,6 +87,11 @@ spec:
           command:
             {{- toYaml .Values.app.command | nindent 12}}
           {{- end }}
+          {{- if .Values.app.env.message }}
+          env:
+          - name: MESSAGE
+            value: "{{ .Values.app.env.message }}"
+          {{- end }}
           {{- if .Values.app.args }}
           args:
             {{- toYaml .Values.app.args | nindent 12}}
