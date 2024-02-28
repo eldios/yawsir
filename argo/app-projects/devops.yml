@@ -1,15 +1,15 @@
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
-  name: argocd
+  name: devops
   namespace: argocd
 spec:
-  description: Core Argocd
+  description: Project containing all DevOps resources
   sourceRepos:
   - '*'
   destinations:
-  - namespace: argocd
-    server: https://kubernetes.default.svc
+  - namespace: '*'
+    server: '*'
   clusterResourceWhitelist:
   - group: '*'
     kind: '*'
