@@ -1,12 +1,16 @@
 {{- if .Values.app.ingress.create }}
 ---
-apiVersion: v1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ printf "%s-%s" (include "app.fullname" .) "app" | trunc 63 }}
   namespace: {{ .Release.Namespace }}
+  annotations:
+    alb.ingress.kubernetes.io/target-type: instance
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    external-dns.alpha.kubernetes.io/hostname: {{ .Values.app.URL }} # give your domain name here
 spec:
-  ingressClassName: " {{ .Values.app.ingress.className }}"
+  ingressClassName: "{{ .Values.app.ingress.className }}"
   rules:
   - hosts: "{{ .Values.app.URL }}"
     http:
@@ -14,10 +18,10 @@ spec:
         - path: /
           pathType: Prefix
           backend:
-          service:
-            name: yawsir
-            port:
-              name: http
+            service:
+              name: {{ printf "%s-%s" (include "app.fullname" .) "app" | trunc 63 }}
+              port:
+                name: http
 {{- end }}
 ---
 apiVersion: v1
@@ -26,7 +30,7 @@ metadata:
   name: {{ printf "%s-%s" (include "app.fullname" .) "app" | trunc 63 }}
   namespace: {{ .Release.Namespace }}
 spec:
-  type: ClusterIP
+  type: NodePort
   selector:
     app.kubernetes.io/app: "app"
   ports:

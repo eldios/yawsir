@@ -3,7 +3,7 @@ app:
   image:
     repository: "eldios/yawsir"
     pullPolicy: IfNotPresent
-    tag: "0.0.2"
+    tag: "v0.0.2"
 
   http:
     port: 8000
@@ -20,7 +20,7 @@ app:
 
   ingress:
     create: false
-    class: "alb"
+    className: "alb"
 
   serviceAccount:
     create: false
