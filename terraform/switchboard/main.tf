@@ -9,25 +9,39 @@
 #   }
 # }
 
+# configure most stuff here
+locals {
+  cluster_name = "switchboard"
+  env          = "dev"
+  namespace    = "ops"
+  domain       = "lele.rip"
+}
+
+# no touchy touchy below this line
+# ---
 module "eks" {
   source           = "../modules/eks"
-  name             = "switchboard"
-  env              = "dev"
-  namespace        = "ops"
+  name             = local.cluster_name
+  env              = local.env
+  namespace        = local.namespace
   external_dns     = true
   cloudflare_token = module.switchboard-cf-dns-token.value
 }
 
 ### Cloudflare DNS integration
-
 data "cloudflare_zone" "cf_dns" {
-  name = "lele.rip"
+  name = local.domain
 }
 
 module "switchboard-cf-dns-token" {
   source = "../modules/cloudflare-token"
 
   zone_id = data.cloudflare_zone.cf_dns.id
-  env     = "dev"
+  env     = local.env
 }
 
+resource "helm_release" "argo-app-of-apps" {
+  name      = "argo-app-of-apps"
+  namespace = "argocd"
+  chart     = "../../argo/app-of-apps/"
+}
