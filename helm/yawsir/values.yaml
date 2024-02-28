@@ -1,0 +1,32 @@
+# app = node-todo app
+app:
+  image:
+    repository: "eldios/yawsir"
+    pullPolicy: IfNotPresent
+    tag: "0.0.2"
+
+  http:
+    port: 8000
+
+  URL: "yawsir.k8s.lele.rip"
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+  ingress:
+    create: false
+    class: "alb"
+
+  serviceAccount:
+    create: false
+    name: ""
+
+  securityContext:
+    runAsUser:  10001
+    runAsGroup: 10001
+    fsGroup:    10001

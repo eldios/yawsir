@@ -1,0 +1,107 @@
+{{- if .Values.app.ingress.create }}
+---
+apiVersion: v1
+kind: Ingress
+metadata:
+  name: {{ printf "%s-%s" (include "app.fullname" .) "app" | trunc 63 }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  ingressClassName: " {{ .Values.app.ingress.className }}"
+  rules:
+  - hosts: "{{ .Values.app.URL }}"
+    http:
+      paths:
+        - path: /
+          pathType: Prefix
+          backend:
+          service:
+            name: yawsir
+            port:
+              name: http
+{{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ printf "%s-%s" (include "app.fullname" .) "app" | trunc 63 }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/app: "app"
+  ports:
+    - name: "http"
+      protocol: TCP
+      port: !!int {{ .Values.app.http.port }}
+      targetPort: "http"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ printf "%s-%s" (include "app.fullname" .) "app" | trunc 63 }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/app: "app"
+    {{- include "app.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app.kubernetes.io/app: "app"
+      {{- include "app.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.app.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        app.kubernetes.io/app: "app"
+        {{- include "app.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.app.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      {{- if .Values.app.serviceAccount.create }}
+      {{printf "serviceAccountName: %s" ( default (include "app.fullname" .) .Values.app.serviceAccount.name ) }}
+      {{- else }}
+      {{printf "serviceAccountName: %s" ( default "default" .Values.app.serviceAccount.name ) }}
+      {{- end }}
+
+      securityContext:
+        {{- toYaml .Values.app.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ printf "%s-%s" .Chart.Name "app" | trunc 63 }}
+          securityContext:
+            {{- toYaml .Values.app.securityContext | nindent 12 }}
+          image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.tag | default .Chart.AppVersion }}"
+          {{- if ".Values.app.command" }}
+          command:
+            {{- toYaml .Values.app.command | nindent 12}}
+          {{- end }}
+          {{- if .Values.app.args }}
+          args:
+            {{- toYaml .Values.app.args | nindent 12}}
+          {{- end }}
+          imagePullPolicy: {{ .Values.app.image.pullPolicy }}
+          resources:
+            {{- toYaml .Values.app.resources | nindent 12 }}
+          ports:
+            - containerPort: !!int {{ .Values.app.http.port }}
+              name: "http"
+              protocol: "TCP"
+      {{- with .Values.app.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.app.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.app.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
