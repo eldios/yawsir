@@ -1,0 +1,31 @@
+name: "Terraform Infra CI"
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "terraform/**"
+
+env:
+  FORCE_COLOR: 3
+
+jobs:
+  check-terraform-format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v1
+      - name: Terraform fmt
+        run: terraform fmt -check -recursive -write=false
+
+  pr-ready-for-merge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: ["check-terraform-format"]
+    if: >-
+      always() &&
+      needs.check-terraform-format.result == 'success'
+    steps:
+      - run: echo "PR ready to be merged"
