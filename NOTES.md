@@ -79,10 +79,26 @@ The first step that the `Makefile` will go through is check that all the needed
 software are available, namely `kind`, `helm` & `kubectl`.
 
 ### Docker
-..TODO
+The Rust code is packaged into a Docker container that uses the multi-phase 
+approach and builds in a builder image and runs in the runtime phase.
+
+The image is published automatically via GHA here https://hub.docker.com/repository/docker/eldios/yawsir
 
 ### KIND
-..TODO
+I used KIND mostly for local development and tests, then most of the deployment
+and code focuses on the AWS EKS implementation with full GitOps via ArgoCD.
 
 ### HELM
-..TODO
+I packages the application via Helm in the `helm/yawsir` directory.
+This is the way ArgoCD also installs and keeps the application in sync.
+
+### ArgoCD
+ArgoCD is setup with the _app-of-apps_ paradigm apprach in the `argo` directory.
+I preferred not to expose ArgoCD to the public and used the common approach of
+port-forwarding to reach it to verify that everything was working correctly.
+
+### Terraform/OpenTofu
+The entire infrastructure is entirely setup and managed via OpenTofu on AWS/EKS.
+The code lives in the `terraform/` directory and it's based on some old modules
+I had around that I updated to install the latest versions of all the Terraform
+modules used.
