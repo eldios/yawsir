@@ -24,7 +24,6 @@ WORKDIR /app
 ARG APP_NAME
 ENV APP_NAME ${APP_NAME}
 
-# Copy assets from the "builder" stage.
 COPY --from=builder /app/target/release/${APP_NAME} /app/${APP_NAME}
 
 # Create a non-privileged user that the app will run under.
