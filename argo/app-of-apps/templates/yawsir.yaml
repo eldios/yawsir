@@ -8,11 +8,12 @@ spec:
   project: default
   source:
     repoURL: https://github.com/eldios/yawsir.git
-    path: argo/yawsir
+    path: helm/yawsir
     targetRevision: HEAD
   destination:
     server: https://kubernetes.default.svc
-    namespace: argocd
+    namespace: yawsir
   syncPolicy:
     automated:
+      prune: true
       selfHeal: true
