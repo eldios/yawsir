@@ -3,12 +3,12 @@ app:
   image:
     repository: "eldios/yawsir"
     pullPolicy: IfNotPresent
-    tag: "0.0.2"
+    tag: "v0.0.2"
 
   http:
     port: 8000
 
-  URL: "yawsir.k8s.lele.rip"
+  URL: "yawsir.lele.rip"
 
   resources:
     limits:
@@ -19,8 +19,8 @@ app:
       memory: 128Mi
 
   ingress:
-    create: false
-    class: "alb"
+    create: true
+    className: "alb"
 
   serviceAccount:
     create: false
