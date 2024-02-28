@@ -9,10 +9,11 @@ metadata:
     alb.ingress.kubernetes.io/target-type: instance
     alb.ingress.kubernetes.io/scheme: internet-facing
     external-dns.alpha.kubernetes.io/hostname: {{ .Values.app.URL }} # give your domain name here
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
 spec:
   ingressClassName: "{{ .Values.app.ingress.className }}"
   rules:
-  - hosts: "{{ .Values.app.URL }}"
+  - host: "{{ .Values.app.URL }}"
     http:
       paths:
         - path: /

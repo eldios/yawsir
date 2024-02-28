@@ -163,6 +163,12 @@ module "eks_blueprints_addons" {
     })]
   }
 
+  enable_cert_manager = true
+  cert_manager = {
+    namespace       = "cert-manager"
+    create_namspace = true
+  }
+
   enable_external_dns = var.external_dns
   external_dns = {
     values = [jsonencode({
