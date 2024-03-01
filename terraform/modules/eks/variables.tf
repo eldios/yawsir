@@ -103,6 +103,31 @@ variable "instance_category" {
   ]
 }
 
+variable "instance_generation" {
+  type = list(string)
+  default = [
+    "4",
+    "5",
+    "6",
+    "7",
+  ]
+}
+
+variable "arch" {
+  type = list(string)
+  default = [
+    "amd64",
+  ]
+}
+
+variable "capacity-type" {
+  type        = list(string)
+  description = "Whether to use Spot (\"spot\") or OnDemand (\"on-demand\") instances. Could be both (it's a list of values)"
+  default = [
+    "spot",
+  ]
+}
+
 variable "cluster_cpu" {
   type    = string
   default = "32000"
