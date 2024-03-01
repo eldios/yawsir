@@ -5,13 +5,13 @@
 #     encrypt = true
 #     bucket  = "tf-state"
 #     region  = "us-east-1"
-#     key     = "switchboard.tfstate"
+#     key     = "k8s.tfstate"
 #   }
 # }
 
 # configure most stuff here
 locals {
-  cluster_name = "switchboard"
+  cluster_name = "k8s"
   env          = "dev"
   namespace    = "ops"
   domain       = "lele.rip"
@@ -25,7 +25,13 @@ module "eks" {
   env              = local.env
   namespace        = local.namespace
   external_dns     = true
-  cloudflare_token = module.switchboard-cf-dns-token.value
+  cloudflare_token = module.cf-dns-token.value
+  cluster_cpu      = "16000"
+  cluster_memory   = "16Gi"
+  instance_category = [
+    "t",
+    "c",
+  ]
 }
 
 ### Cloudflare DNS integration
@@ -33,7 +39,7 @@ data "cloudflare_zone" "cf_dns" {
   name = local.domain
 }
 
-module "switchboard-cf-dns-token" {
+module "cf-dns-token" {
   source = "../modules/cloudflare-token"
 
   zone_id = data.cloudflare_zone.cf_dns.id

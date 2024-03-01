@@ -329,15 +329,15 @@ resource "kubectl_manifest" "karpenter_provisioner" {
               values: [ ${join(",", formatlist("%#v", flatten(var.instance_memory)))} ]
             - key: "karpenter.k8s.aws/instance-generation"
               operator: Gt
-              values: [ "5" ]
+              values: [ ${join(",", formatlist("%#v", flatten(var.instance_generation)))} ]
             - key: "kubernetes.io/arch"
               operator: In
-              values: ["amd64"]
+              values: [ ${join(",", formatlist("%#v", flatten(var.arch)))} ]
             # If not included, the webhook for the AWS cloud provider
             # will default to on-demand only
             - key: "karpenter.sh/capacity-type"
               operator: In
-              values: ["spot"]
+              values: [ ${join(",", formatlist("%#v", flatten(var.capacity-type)))} ]
           # Karpenter provides the ability to specify a few additional Kubelet args.
           # These are all optional and provide support for additional customization and use cases.
           kubelet:
